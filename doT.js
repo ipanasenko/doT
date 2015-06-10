@@ -77,7 +77,12 @@
 					return s + "def.__exp['"+rw+"']";
 				}
 			});
-			var v = new Function("def", "return " + code)(def);
+			var v;
+			try {
+				v = new Function("def", "return " + code)(def);
+			} catch (e) {
+				v = '';
+			}
 			return v ? resolveDefs(c, v, def) : v;
 		});
 	}

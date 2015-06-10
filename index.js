@@ -117,15 +117,26 @@ InstallDots.prototype.compileAll = function() {
 
 	var defFolder = this.__path,
 		sources = fs.readdirSync(defFolder),
-		k, l, name;
+		k, l, name,
+		self = this;
 
-	for( k = 0, l = sources.length; k < l; k++) {
-		name = sources[k];
-		if (/\.def(\.dot|\.jst)?$/.test(name)) {
-			console.log("Loaded def " + name);
-			this.__includes[name.substring(0, name.indexOf('.'))] = readdata(defFolder + name);
-		}
+	function loadDefs(dir) {
+		fs.readdirSync(dir).forEach(function (name) {
+			try {
+				// is folder
+				loadDefs(dir + name + '/');
+			} catch (o_O) {
+				// is file
+				if (/\.def(\.dot|\.jst)?$/.test(name)) {
+					var longName = (dir + name).replace(defFolder, '');
+					console.log("Loaded def " + name);
+					self.__includes[longName.substring(0, longName.indexOf('.'))] = readdata(dir + name);
+				}
+			}
+		});
 	}
+
+  loadDefs(defFolder);
 
 	for( k = 0, l = sources.length; k < l; k++) {
 		name = sources[k];
